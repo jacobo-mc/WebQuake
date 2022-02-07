@@ -348,7 +348,15 @@ CL.AdjustAngles = function()
 		speed *= CL.anglespeedkey.value;
 
 	var angles = CL.state.viewangles;
-
+    if (Key.gamepadlastaxes) {
+	// joystick/gamepad movement
+	//console.log(Key.gamepadlastaxes)
+	// TODO make customizable?
+	angles[1] += speed * CL.yawspeed.value * Key.gamepadlastaxes[0] * -1;
+	angles[1] = Vec.Anglemod(angles[1]);
+	V.StopPitchDrift();
+	angles[0] += speed * CL.pitchspeed.value * Key.gamepadlastaxes[1]
+    }
 	if ((CL.kbuttons[CL.kbutton.strafe].state & 1) === 0)
 	{
 		angles[1] += speed * CL.yawspeed.value * (CL.KeyState(CL.kbutton.left) - CL.KeyState(CL.kbutton.right));
@@ -388,6 +396,11 @@ CL.BaseMove = function()
 	var cmd = CL.state.cmd;
 
 	cmd.sidemove = CL.sidespeed.value * (CL.KeyState(CL.kbutton.moveright) - CL.KeyState(CL.kbutton.moveleft));
+	if (Key.gamepadlastaxes && Key.gamepadlastaxes[2]) {
+	cmd.sidemove += CL.sidespeed.value * CL.m_side.value * Key.gamepadlastaxes[2];
+	console.log('sidemove',cmd.sidemove);
+	//cmd.sidemove = CL.sidespeed.value * Key.gamepadlastaxes[2];
+    }
 	if ((CL.kbuttons[CL.kbutton.strafe].state & 1) !== 0)
 		cmd.sidemove += CL.sidespeed.value * (CL.KeyState(CL.kbutton.right) - CL.KeyState(CL.kbutton.left));
 
@@ -397,7 +410,11 @@ CL.BaseMove = function()
 		cmd.forwardmove = CL.forwardspeed.value * CL.KeyState(CL.kbutton.forward) - CL.backspeed.value * CL.KeyState(CL.kbutton.back);
 	else
 		cmd.forwardmove = 0.0;
-
+if (Key.gamepadlastaxes && Key.gamepadlastaxes[3]) {
+	cmd.forwardmove += CL.forwardspeed.value * CL.m_forward.value * Key.gamepadlastaxes[3] * -1;
+	console.log('forwardmove',cmd.forwardmove);
+	//cmd.forwardmove = CL.forwardspeed.value * Key.gamepadlastaxes[3] * -1;
+    }
 	if ((CL.kbuttons[CL.kbutton.speed].state & 1) !== 0)
 	{
 		cmd.forwardmove *= CL.movespeedkey.value;
