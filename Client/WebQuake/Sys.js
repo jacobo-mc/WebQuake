@@ -236,7 +236,12 @@ Sys.onmousewheel = function(e)
 	Key.Event(key);
 	e.preventDefault();
 };
-
+if (window.chrome && chrome.app) {
+    chrome.app.window.current().onClosed.addListener( function() {
+	chrome.runtime.sendMessage({msg:'Host.Shutdown', data:null}) // not being received by background page :-(
+	Host.Shutdown();
+    })
+}
 Sys.onunload = function()
 {
 	Host.Shutdown();
