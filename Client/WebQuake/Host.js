@@ -259,8 +259,16 @@ Host._Frame = function()
 
 Host.timetotal = 0.0;
 Host.timecount = 0;
+Host._gamepad = null;
 Host.Frame = function()
 {
+	Host._gamepad = (navigator.webkitGetGamepads && navigator.webkitGetGamepads()[0]);
+
+    if (Host._gamepad) {
+	Sys.ongamepadpoll(Host._gamepad);
+    } else {
+	//Host._gamepad = (navigator.webkitGetGamepads && navigator.webkitGetGamepads()[0]);
+    }
 	if (Host.serverprofile.value === 0)
 	{
 		Host._Frame();
